@@ -13,6 +13,7 @@ import (
 type IdbService interface {
 	Health() map[string]string
 	Disconnect(ctx context.Context) error
+	DB() *mongo.Client
 }
 
 type dbService struct {
@@ -53,4 +54,8 @@ func (s *dbService) Health() map[string]string {
 
 func (s *dbService) Disconnect(ctx context.Context) error {
 	return s.db.Disconnect(ctx)
+}
+
+func (s *dbService) DB() *mongo.Client {
+	return s.db
 }

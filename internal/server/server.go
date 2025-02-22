@@ -51,6 +51,7 @@ func (s *Server) initServer() http.Handler {
 	}))
 
 	rest.InitPublicRoutes(e, s.db)
+	rest.InitMovieRoutes(e, s.db)
 
 	return e
 }
