@@ -15,10 +15,10 @@ import (
 type Server struct {
 	port int
 
-	db database.Service
+	db database.IdbService
 }
 
-func NewServer(db database.Service, config *config.Server) *http.Server {
+func NewServer(db database.IdbService, config *config.Server) *http.Server {
 	NewServer := &Server{
 		port: config.Port,
 

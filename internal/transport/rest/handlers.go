@@ -6,10 +6,10 @@ import (
 )
 
 type PublicHandler struct {
-	db database.Service
+	db database.IdbService
 }
 
-func NewPublicHandler(db database.Service) *PublicHandler {
+func NewPublicHandler(db database.IdbService) *PublicHandler {
 
 	return &PublicHandler{
 		db: db,

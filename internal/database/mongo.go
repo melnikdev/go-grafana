@@ -10,16 +10,16 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type Service interface {
+type IdbService interface {
 	Health() map[string]string
 	Disconnect(ctx context.Context) error
 }
 
-type service struct {
+type dbService struct {
 	db *mongo.Client
 }
 
-func New(config *config.MongoDB) Service {
+func New(config *config.MongoDB) IdbService {
 
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 
@@ -30,12 +30,12 @@ func New(config *config.MongoDB) Service {
 		panic(err)
 	}
 
-	return &service{
+	return &dbService{
 		db: client,
 	}
 }
 
-func (s *service) Health() map[string]string {
+func (s *dbService) Health() map[string]string {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
@@ -51,6 +51,6 @@ func (s *service) Health() map[string]string {
 	}
 }
 
-func (s *service) Disconnect(ctx context.Context) error {
+func (s *dbService) Disconnect(ctx context.Context) error {
 	return s.db.Disconnect(ctx)
 }
