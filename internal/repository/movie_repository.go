@@ -37,7 +37,7 @@ func (r MovieRepository) FindById(id string) (Movie, error) {
 	idParam, err := primitive.ObjectIDFromHex(id)
 
 	if err != nil {
-		panic(err)
+		return Movie{}, errors.Wrap(err, "not valid id")
 	}
 
 	filter := bson.D{{Key: "_id", Value: idParam}}
@@ -47,9 +47,9 @@ func (r MovieRepository) FindById(id string) (Movie, error) {
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return Movie{}, errors.Wrap(err, "no movie found")
+			return Movie{}, errors.Wrap(err, "not movie found")
 		}
-		panic(err)
+		return Movie{}, errors.Wrap(err, "error finding movie")
 	}
 
 	return result, nil
@@ -63,8 +63,6 @@ func (r MovieRepository) Create(movie Movie) (string, error) {
 	if err != nil {
 		return "", errors.Wrap(err, "failed to insert movie")
 	}
-	log.Println(result)
-	return result.InsertedID.(primitive.ObjectID).Hex(), nil
 
-	// fmt.Println("Inserted document ID:", result.InsertedID.(primitive.ObjectID).Hex())
+	return result.InsertedID.(primitive.ObjectID).Hex(), nil
 }

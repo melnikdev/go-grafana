@@ -4,7 +4,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/melnikdev/go-grafana/internal/repository"
 	"github.com/melnikdev/go-grafana/internal/service"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type MovieHandler struct {
@@ -28,7 +27,10 @@ func (h MovieHandler) GetMovie(c echo.Context) error {
 }
 
 func (h MovieHandler) CreateMovie(c echo.Context) error {
-	newMovie := repository.Movie{ID: primitive.NewObjectID(), Title: "New York"}
+	newMovie := repository.Movie{
+		// ID: primitive.NewObjectID(),
+		Title: "New York",
+	}
 	id, err := h.service.Create(newMovie)
 
 	if err != nil {
