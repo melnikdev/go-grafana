@@ -2,7 +2,9 @@ package rest
 
 import (
 	"github.com/labstack/echo/v4"
+	"github.com/melnikdev/go-grafana/internal/repository"
 	"github.com/melnikdev/go-grafana/internal/service"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type MovieHandler struct {
@@ -16,10 +18,21 @@ func NewMovieHandler(service service.IMovieService) *MovieHandler {
 }
 
 func (h MovieHandler) GetMovie(c echo.Context) error {
-	movie, err := h.service.FindById()
+	id := c.Param("id")
+	movie, err := h.service.FindById(id)
 
 	if err != nil {
-		return c.String(200, err.Error())
+		return c.String(404, err.Error())
 	}
 	return c.String(200, movie.Title)
+}
+
+func (h MovieHandler) CreateMovie(c echo.Context) error {
+	newMovie := repository.Movie{ID: primitive.NewObjectID(), Title: "New York"}
+	id, err := h.service.Create(newMovie)
+
+	if err != nil {
+		return c.String(500, err.Error())
+	}
+	return c.String(200, "CreateMovie id = "+id)
 }

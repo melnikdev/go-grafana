@@ -17,5 +17,6 @@ func InitMovieRoutes(e *echo.Echo, db database.IdbService) {
 	ser := service.NewMovieService(rep)
 	h := NewMovieHandler(ser)
 
-	e.GET("/movie", h.GetMovie)
+	e.GET("/movie/:id", h.GetMovie)
+	e.GET("/movie", h.CreateMovie)
 }
