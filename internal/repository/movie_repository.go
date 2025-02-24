@@ -19,6 +19,8 @@ type Movie struct {
 type IMovieRepository interface {
 	FindById(id string) (Movie, error)
 	Create(movie Movie) (string, error)
+	Update(id string, movie Movie) error
+	Delete(id string) error
 }
 
 type MovieRepository struct {
@@ -43,7 +45,7 @@ func (r MovieRepository) FindById(id string) (Movie, error) {
 	filter := bson.D{{Key: "_id", Value: idParam}}
 	log.Println(filter)
 	var result Movie
-	err = coll.FindOne(context.TODO(), filter).Decode(&result)
+	err = coll.FindOne(context.Background(), filter).Decode(&result)
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -65,4 +67,44 @@ func (r MovieRepository) Create(movie Movie) (string, error) {
 	}
 
 	return result.InsertedID.(primitive.ObjectID).Hex(), nil
+}
+
+func (r MovieRepository) Update(id string, movie Movie) error {
+	coll := r.dbclient.DB().Database("sample_mflix").Collection("movies")
+
+	idParam, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		return errors.Wrap(err, "not valid id")
+	}
+
+	filter := bson.D{{Key: "_id", Value: idParam}}
+
+	_, err = coll.ReplaceOne(context.Background(), filter, movie)
+
+	if err != nil {
+		return errors.Wrap(err, "failed to update movie")
+	}
+
+	return nil
+}
+
+func (r MovieRepository) Delete(id string) error {
+	coll := r.dbclient.DB().Database("sample_mflix").Collection("movies")
+
+	idParam, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		return errors.Wrap(err, "not valid id")
+	}
+
+	filter := bson.D{{Key: "_id", Value: idParam}}
+
+	_, err = coll.DeleteOne(context.Background(), filter)
+
+	if err != nil {
+		return errors.Wrap(err, "failed to delete movie")
+	}
+
+	return nil
 }

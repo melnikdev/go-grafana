@@ -38,3 +38,30 @@ func (h MovieHandler) CreateMovie(c echo.Context) error {
 	}
 	return c.String(200, "CreateMovie id = "+id)
 }
+
+func (h MovieHandler) UpdateMovie(c echo.Context) error {
+	id := c.Param("id")
+	newMovie := repository.Movie{
+		Title: "New York",
+	}
+
+	err := h.service.Update(id, newMovie)
+
+	if err != nil {
+		return c.String(500, err.Error())
+	}
+
+	return c.String(200, "UpdateMovie id = "+id)
+}
+
+func (h MovieHandler) DeleteMovie(c echo.Context) error {
+	id := c.Param("id")
+
+	err := h.service.Delete(id)
+
+	if err != nil {
+		return c.String(500, err.Error())
+	}
+
+	return c.String(200, "DeleteMovie id = "+id)
+}
