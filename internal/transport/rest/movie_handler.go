@@ -2,7 +2,7 @@ package rest
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/melnikdev/go-grafana/internal/repository"
+	"github.com/melnikdev/go-grafana/internal/request"
 	"github.com/melnikdev/go-grafana/internal/service"
 )
 
@@ -27,11 +27,10 @@ func (h MovieHandler) GetMovie(c echo.Context) error {
 }
 
 func (h MovieHandler) CreateMovie(c echo.Context) error {
-	newMovie := repository.Movie{
-		// ID: primitive.NewObjectID(),
-		Title: "New York",
-	}
-	id, err := h.service.Create(newMovie)
+	req := request.CreateMovieRequest{}
+	c.Bind(&req)
+
+	id, err := h.service.Create(req)
 
 	if err != nil {
 		return c.String(500, err.Error())
@@ -41,11 +40,9 @@ func (h MovieHandler) CreateMovie(c echo.Context) error {
 
 func (h MovieHandler) UpdateMovie(c echo.Context) error {
 	id := c.Param("id")
-	newMovie := repository.Movie{
-		Title: "New York",
-	}
 
-	err := h.service.Update(id, newMovie)
+	req := request.UpdateMovieRequest{}
+	err := h.service.Update(id, req)
 
 	if err != nil {
 		return c.String(500, err.Error())

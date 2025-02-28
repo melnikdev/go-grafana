@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/melnikdev/go-grafana/internal/database"
 	"github.com/melnikdev/go-grafana/internal/repository"
@@ -13,9 +14,10 @@ func InitPublicRoutes(e *echo.Echo, db database.IdbService) {
 }
 
 func InitMovieRoutes(e *echo.Echo, db database.IdbService) {
-	rep := repository.NewMovieRepository(db)
-	ser := service.NewMovieService(rep)
-	h := NewMovieHandler(ser)
+	v := validator.New()
+	r := repository.NewMovieRepository(db)
+	s := service.NewMovieService(r, v)
+	h := NewMovieHandler(s)
 
 	e.GET("/movie/:id", h.GetMovie)
 	e.POST("/movie", h.CreateMovie)
