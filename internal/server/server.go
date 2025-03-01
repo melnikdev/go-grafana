@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/labstack/echo-contrib/echoprometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/melnikdev/go-grafana/internal/config"
@@ -41,6 +42,7 @@ func (s *Server) initServer() http.Handler {
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(echoprometheus.NewMiddleware("go_grafana"))
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins:     []string{"https://*", "http://*"},

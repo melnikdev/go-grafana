@@ -2,6 +2,7 @@ package rest
 
 import (
 	"github.com/go-playground/validator/v10"
+	"github.com/labstack/echo-contrib/echoprometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/melnikdev/go-grafana/internal/database"
 	"github.com/melnikdev/go-grafana/internal/repository"
@@ -19,6 +20,7 @@ func InitMovieRoutes(e *echo.Echo, db database.IdbService) {
 	s := service.NewMovieService(r, v)
 	h := NewMovieHandler(s)
 
+	e.GET("/metrics", echoprometheus.NewHandler())
 	e.GET("/movie/:id", h.GetMovie)
 	e.POST("/movie", h.CreateMovie)
 	e.PUT("/movie/:id", h.UpdateMovie)
