@@ -5,21 +5,27 @@ import (
 )
 
 templ List(items []repository.Movie) {
-  <ul>
-  for _, item := range items {
+  <div class="flex flex-row">
+   for _, item := range items {
 
-    <li>
-      @getImage(item)
-      Title: { item.Title } 
-    </li>
+    <div class="basis-1/5 rounded-lg border border-slate-200 bg-white shadow-sm">
+      <div class="relative m-2.5 h-56 overflow-hidden rounded-md text-white">
+        @getImage(item)
+      </div>
+      <div class="p-6">
+        <h6 class="mb-2 text-xl font-semibold text-slate-800">
+          { item.Title } 
+        </h6>
+      </div>
+    </div>
   }
-  </ul>
+   </div>
 }
 
 templ getImage(item repository.Movie) {
 	if item.Poster != "" {
-		  <img src={ item.Poster}  alt={ item.Title } width="100px"/>
+		  <img class="rounded-t-lg" src={ item.Poster}  alt={ item.Title } />
 	}else{
-     <img src="https://picsum.photos/100"  alt="default" width="100px"/>
+     <img class="rounded-t-lg" src="https://picsum.photos/300"  alt="default" />
   }
 }

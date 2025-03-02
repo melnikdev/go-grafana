@@ -54,7 +54,7 @@ func Base(contents templ.Component, title, description string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<script src=\"/assets/js/htmx.min.js\" hx-preserve=\"true\"></script></head><body class=\"antialiased min-h-screen flex flex-col\" hx-ext=\"head-support\"><div id=\"content\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<script src=\"/assets/js/htmx.min.js\" hx-preserve=\"true\"></script><link href=\"/assets/css/output.css\" rel=\"stylesheet\" hx-preserve=\"true\"></head><body class=\"antialiased min-h-screen flex flex-col\" hx-ext=\"head-support\"><div id=\"content\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

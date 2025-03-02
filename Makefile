@@ -11,3 +11,7 @@ run:
 temple-generate:
 	@echo "Generating temple..."
 	@templ generate
+
+tailwindcss-generate:
+	@echo "Generating temple..."
+	@npx @tailwindcss/cli -i cmd/web/styles/input.css -o cmd/web/assets/css/output.css
