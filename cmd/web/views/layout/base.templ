@@ -1,0 +1,38 @@
+package layout
+
+const (
+	defaultTitle = "Default title"
+)
+
+templ Base(contents templ.Component ,title, description string) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<title>{ getTitle(title) }</title>
+			<link rel="icon" type="image/x-icon" href="/assets/favicon.ico" hx-preserve="true"/>
+			<meta charset="UTF-8" hx-preserve="true"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0" hx-preserve="true"/>
+			@descriptionMeta(description)
+			<script src="/assets/js/htmx.min.js" hx-preserve="true"></script>
+			// <link href="/assets/css/tailwind.css" rel="stylesheet" hx-preserve="true"/>
+		</head>
+		<body class="antialiased min-h-screen flex flex-col" hx-ext="head-support">
+			<div id="content">
+                @contents
+			</div>
+		</body>
+	</html>
+}
+
+templ descriptionMeta(description string) {
+	if description != "" {
+		<meta name="description" content={ description }/>
+	}
+}
+
+func getTitle(title string) string {
+	if title == "" {
+		return defaultTitle
+	}
+	return title
+}

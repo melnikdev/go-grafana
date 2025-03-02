@@ -53,6 +53,8 @@ func (s *Server) initServer() http.Handler {
 		MaxAge:           300,
 	}))
 
+	// e.Static("./cmd/web/assets", "assets")
+	e.Static("/assets", "cmd/web/assets")
 	apiroute.InitPublicRoutes(e, s.db)
 	apiroute.InitMovieRoutes(e, s.db)
 	webroute.InitWebRoutes(e, s.db)

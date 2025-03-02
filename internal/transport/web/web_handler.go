@@ -5,7 +5,9 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
-	"github.com/melnikdev/go-grafana/cmd/web/views"
+	"github.com/melnikdev/go-grafana/cmd/web/views/home"
+	"github.com/melnikdev/go-grafana/cmd/web/views/layout"
+	"github.com/melnikdev/go-grafana/cmd/web/views/movie"
 	"github.com/melnikdev/go-grafana/internal/service"
 )
 
@@ -26,7 +28,11 @@ func (h WebHandler) GetTop5Movie(c echo.Context) error {
 		return c.String(404, err.Error())
 	}
 
-	return render(c, http.StatusOK, views.MoviesList(movies))
+	return render(c, http.StatusOK, layout.Base(movie.List(movies), "Movies", "Movies Page"))
+}
+
+func (h WebHandler) GetHome(c echo.Context) error {
+	return render(c, http.StatusOK, layout.Base(home.Home(), "Home", "Home Page"))
 }
 
 func render(ctx echo.Context, statusCode int, t templ.Component) error {

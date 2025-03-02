@@ -8,5 +8,5 @@ import (
 
 func InitPublicRoutes(e *echo.Echo, db database.IdbService) {
 	h := rest.NewPublicHandler(db)
-	e.GET("/", h.HelloWorld)
+	e.GET("/hello", h.HelloWorld)
 }

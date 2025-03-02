@@ -15,6 +15,7 @@ func InitWebRoutes(e *echo.Echo, db database.IdbService) {
 	s := service.NewMovieService(r, v)
 	h := web.NewWebHandler(s)
 
+	e.GET("/", h.GetHome)
 	e.GET("/movies", h.GetTop5Movie)
 
 }

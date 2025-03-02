@@ -1,0 +1,25 @@
+package movie
+
+import (
+  "github.com/melnikdev/go-grafana/internal/repository"
+)
+
+templ List(items []repository.Movie) {
+  <ul>
+  for _, item := range items {
+
+    <li>
+      @getImage(item)
+      Title: { item.Title } 
+    </li>
+  }
+  </ul>
+}
+
+templ getImage(item repository.Movie) {
+	if item.Poster != "" {
+		  <img src={ item.Poster}  alt={ item.Title } width="100px"/>
+	}else{
+     <img src="https://picsum.photos/100"  alt="default" width="100px"/>
+  }
+}
