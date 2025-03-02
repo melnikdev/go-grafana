@@ -1,4 +1,4 @@
-package rest
+package apiroute
 
 import (
 	"github.com/go-playground/validator/v10"
@@ -7,18 +7,14 @@ import (
 	"github.com/melnikdev/go-grafana/internal/database"
 	"github.com/melnikdev/go-grafana/internal/repository"
 	"github.com/melnikdev/go-grafana/internal/service"
+	"github.com/melnikdev/go-grafana/internal/transport/rest"
 )
-
-func InitPublicRoutes(e *echo.Echo, db database.IdbService) {
-	h := NewPublicHandler(db)
-	e.GET("/", h.HelloWorld)
-}
 
 func InitMovieRoutes(e *echo.Echo, db database.IdbService) {
 	v := validator.New()
 	r := repository.NewMovieRepository(db)
 	s := service.NewMovieService(r, v)
-	h := NewMovieHandler(s)
+	h := rest.NewMovieHandler(s)
 
 	e.GET("/metrics", echoprometheus.NewHandler())
 	e.GET("/movie/:id", h.GetMovie)

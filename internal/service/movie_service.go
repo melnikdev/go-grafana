@@ -11,6 +11,7 @@ type IMovieService interface {
 	Create(movie request.CreateMovieRequest) (string, error)
 	Update(id string, movie request.UpdateMovieRequest) error
 	Delete(id string) error
+	GetTop5Movie() ([]repository.Movie, error)
 }
 
 type MovieService struct {
@@ -59,4 +60,14 @@ func (s MovieService) Update(id string, movie request.UpdateMovieRequest) error 
 
 func (s MovieService) Delete(id string) error {
 	return s.MovieRepository.Delete(id)
+}
+
+func (s MovieService) GetTop5Movie() ([]repository.Movie, error) {
+	movies, err := s.MovieRepository.GetTop5Movie()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return movies, nil
 }

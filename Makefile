@@ -7,3 +7,7 @@ build:
 # Run the application
 run:
 	@go run cmd/api/main.go
+
+temple-generate:
+	@echo "Generating temple..."
+	@templ generate

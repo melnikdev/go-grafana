@@ -2,21 +2,31 @@ package repository
 
 import (
 	"context"
-	"log"
 
 	"github.com/melnikdev/go-grafana/internal/database"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Movie struct {
-	ID    primitive.ObjectID `bson:"_id"`
-	Title string
+	ID     primitive.ObjectID `bson:"_id"`
+	Title  string
+	Plot   string
+	Poster string
+	Imdb   Imdb
+}
+
+type Imdb struct {
+	Rating string `bson:"rating,omitempty"`
+	Votes  string `bson:"votes,omitempty"`
+	Id     int32  `bson:"id,omitempty"`
 }
 
 type IMovieRepository interface {
+	GetTop5Movie() ([]Movie, error)
 	FindById(id string) (Movie, error)
 	Create(movie Movie) (string, error)
 	Update(id string, movie Movie) error
@@ -33,6 +43,29 @@ func NewMovieRepository(db database.IdbService) *MovieRepository {
 	}
 }
 
+func (r MovieRepository) GetTop5Movie() ([]Movie, error) {
+	coll := r.dbclient.DB().Database("sample_mflix").Collection("movies")
+
+	filter := bson.D{{"imdb.rating", bson.D{{"$ne", nil}}}}
+	options := options.Find().SetSort(bson.D{{"imdb.rating", -1}}).SetLimit(5)
+
+	cursor, err := coll.Find(context.Background(), filter, options)
+
+	if err != nil {
+		return nil, errors.Wrap(err, "error getting top 5 movies")
+	}
+
+	var movies []Movie
+	err = cursor.All(context.Background(), &movies)
+
+	if err != nil {
+		return nil, errors.Wrap(err, "error getting movies")
+	}
+
+	return movies, nil
+
+}
+
 func (r MovieRepository) FindById(id string) (Movie, error) {
 	coll := r.dbclient.DB().Database("sample_mflix").Collection("movies")
 
@@ -43,7 +76,7 @@ func (r MovieRepository) FindById(id string) (Movie, error) {
 	}
 
 	filter := bson.D{{Key: "_id", Value: idParam}}
-	log.Println(filter)
+
 	var result Movie
 	err = coll.FindOne(context.Background(), filter).Decode(&result)
 

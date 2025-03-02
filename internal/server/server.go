@@ -10,7 +10,8 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/melnikdev/go-grafana/internal/config"
 	"github.com/melnikdev/go-grafana/internal/database"
-	"github.com/melnikdev/go-grafana/internal/transport/rest"
+	apiroute "github.com/melnikdev/go-grafana/internal/transport/rest/route"
+	webroute "github.com/melnikdev/go-grafana/internal/transport/web/route"
 )
 
 type Server struct {
@@ -52,8 +53,9 @@ func (s *Server) initServer() http.Handler {
 		MaxAge:           300,
 	}))
 
-	rest.InitPublicRoutes(e, s.db)
-	rest.InitMovieRoutes(e, s.db)
+	apiroute.InitPublicRoutes(e, s.db)
+	apiroute.InitMovieRoutes(e, s.db)
+	webroute.InitWebRoutes(e, s.db)
 
 	return e
 }

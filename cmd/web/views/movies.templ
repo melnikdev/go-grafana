@@ -1,0 +1,14 @@
+package views
+
+import (
+  "github.com/melnikdev/go-grafana/internal/repository"
+)
+
+templ MoviesList(items []repository.Movie) {
+  <ul>
+  for _, item := range items {
+
+    <li>Title: { item.Title } ; </li>
+  }
+  </ul>
+}
