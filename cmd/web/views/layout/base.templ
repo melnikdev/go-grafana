@@ -16,10 +16,12 @@ templ Base(contents templ.Component ,title, description string) {
 			<script src="/assets/js/htmx.min.js" hx-preserve="true"></script>
 			<link href="/assets/css/output.css" rel="stylesheet" hx-preserve="true"/>
 		</head>
-		<body class="antialiased min-h-screen flex flex-col" hx-ext="head-support">
-			<div id="content">
+		<body class="bg-black text-white flex flex-col min-h-screen">
+			@header()
+			<main class="container mx-auto my-8 p-4 bg-[#181818] shadow-md rounded-lg flex-1">
                 @contents
-			</div>
+			</main>
+			@footer()
 		</body>
 	</html>
 }
@@ -29,7 +31,25 @@ templ descriptionMeta(description string) {
 		<meta name="description" content={ description }/>
 	}
 }
+templ header() {
+	    <header class="bg-[#141414] p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-2xl font-bold text-red-600">Movies</div>
+            <nav>
+                <ul class="flex space-x-6 text-gray-300">
+                    <li><a href="/" class="hover:text-white">Home</a></li>
+                    <li><a href="/movies" class="hover:text-white">Movies</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+}
 
+templ footer() {
+	    <footer class="bg-[#141414] text-gray-400 text-center p-4 mt-8">
+        <p>&copy; 2025 Movies.</p>
+    </footer>
+}
 func getTitle(title string) string {
 	if title == "" {
 		return defaultTitle

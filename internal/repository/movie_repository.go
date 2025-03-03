@@ -26,7 +26,7 @@ type Imdb struct {
 }
 
 type IMovieRepository interface {
-	GetTop5Movie() ([]Movie, error)
+	GetTopMovies(limit int64) ([]Movie, error)
 	FindById(id string) (Movie, error)
 	Create(movie Movie) (string, error)
 	Update(id string, movie Movie) error
@@ -43,11 +43,11 @@ func NewMovieRepository(db database.IdbService) *MovieRepository {
 	}
 }
 
-func (r MovieRepository) GetTop5Movie() ([]Movie, error) {
+func (r MovieRepository) GetTopMovies(limit int64) ([]Movie, error) {
 	coll := r.dbclient.DB().Database("sample_mflix").Collection("movies")
 
-	filter := bson.D{{"imdb.rating", bson.D{{"$ne", nil}}}}
-	options := options.Find().SetSort(bson.D{{"imdb.rating", -1}}).SetLimit(5)
+	filter := bson.D{{Key: "imdb.rating", Value: bson.D{{"$ne", nil}}}, {Key: "poster", Value: bson.D{{"$ne", nil}}}}
+	options := options.Find().SetSort(bson.D{{Key: "imdb.rating", Value: -1}}).SetLimit(limit)
 
 	cursor, err := coll.Find(context.Background(), filter, options)
 

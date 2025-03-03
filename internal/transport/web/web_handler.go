@@ -21,8 +21,8 @@ func NewWebHandler(service service.IMovieService) *WebHandler {
 	}
 }
 
-func (h WebHandler) GetTop5Movie(c echo.Context) error {
-	movies, err := h.service.GetTop5Movie()
+func (h WebHandler) GetTopMovies(c echo.Context) error {
+	movies, err := h.service.GetTopMovies(20)
 
 	if err != nil {
 		return c.String(404, err.Error())

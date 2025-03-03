@@ -5,17 +5,14 @@ import (
 )
 
 templ List(items []repository.Movie) {
-  <div class="flex flex-row">
+  <h1 class="text-3xl font-bold mb-4">Top Movies</h1>
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
    for _, item := range items {
 
-    <div class="basis-1/5 rounded-lg border border-slate-200 bg-white shadow-sm">
-      <div class="relative m-2.5 h-56 overflow-hidden rounded-md text-white">
-        @getImage(item)
-      </div>
-      <div class="p-6">
-        <h6 class="mb-2 text-xl font-semibold text-slate-800">
-          { item.Title } 
-        </h6>
+    <div class="relative group overflow-hidden rounded-lg">
+      @getImage(item)
+      <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300">
+        <span class="text-2xl font-bold text-white text-center">{ item.Title }</span>
       </div>
     </div>
   }
@@ -24,8 +21,8 @@ templ List(items []repository.Movie) {
 
 templ getImage(item repository.Movie) {
 	if item.Poster != "" {
-		  <img class="rounded-t-lg" src={ item.Poster}  alt={ item.Title } />
+		  <img class="rounded-lg group-hover:brightness-50 transition duration-300" src={ item.Poster}  alt={ item.Title } />
 	}else{
-     <img class="rounded-t-lg" src="https://picsum.photos/300"  alt="default" />
+     <img class="rounded-lg group-hover:brightness-50 transition duration-300" src="https://picsum.photos/300"  alt="default" />
   }
 }
