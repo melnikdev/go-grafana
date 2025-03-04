@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	"github.com/melnikdev/go-grafana/internal/database"
 	"github.com/pkg/errors"
@@ -12,11 +13,11 @@ import (
 )
 
 type Movie struct {
-	ID     primitive.ObjectID `bson:"_id"`
-	Title  string
-	Plot   string
-	Poster string
-	Imdb   Imdb
+	ID     primitive.ObjectID `bson:"_id,omitempty"`
+	Title  string             `bson:"title,omitempty"`
+	Plot   string             `bson:"plot,omitempty"`
+	Poster string             `bson:"poster,omitempty"`
+	Imdb   Imdb               `bson:"imdb,omitempty"`
 }
 
 type Imdb struct {
@@ -44,12 +45,15 @@ func NewMovieRepository(db database.IdbService) *MovieRepository {
 }
 
 func (r MovieRepository) GetTopMovies(limit int64) ([]Movie, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	coll := r.dbclient.DB().Database("sample_mflix").Collection("movies")
 
 	filter := bson.D{{Key: "imdb.rating", Value: bson.D{{"$ne", nil}}}, {Key: "poster", Value: bson.D{{"$ne", nil}}}}
 	options := options.Find().SetSort(bson.D{{Key: "imdb.rating", Value: -1}}).SetLimit(limit)
 
-	cursor, err := coll.Find(context.Background(), filter, options)
+	cursor, err := coll.Find(ctx, filter, options)
 
 	if err != nil {
 		return nil, errors.Wrap(err, "error getting top 5 movies")
@@ -67,6 +71,9 @@ func (r MovieRepository) GetTopMovies(limit int64) ([]Movie, error) {
 }
 
 func (r MovieRepository) FindById(id string) (Movie, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	coll := r.dbclient.DB().Database("sample_mflix").Collection("movies")
 
 	idParam, err := primitive.ObjectIDFromHex(id)
@@ -78,7 +85,7 @@ func (r MovieRepository) FindById(id string) (Movie, error) {
 	filter := bson.D{{Key: "_id", Value: idParam}}
 
 	var result Movie
-	err = coll.FindOne(context.Background(), filter).Decode(&result)
+	err = coll.FindOne(ctx, filter).Decode(&result)
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -91,9 +98,12 @@ func (r MovieRepository) FindById(id string) (Movie, error) {
 }
 
 func (r MovieRepository) Create(movie Movie) (string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	coll := r.dbclient.DB().Database("sample_mflix").Collection("movies")
 
-	result, err := coll.InsertOne(context.Background(), movie)
+	result, err := coll.InsertOne(ctx, movie)
 
 	if err != nil {
 		return "", errors.Wrap(err, "failed to insert movie")
@@ -103,6 +113,9 @@ func (r MovieRepository) Create(movie Movie) (string, error) {
 }
 
 func (r MovieRepository) Update(id string, movie Movie) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	coll := r.dbclient.DB().Database("sample_mflix").Collection("movies")
 
 	idParam, err := primitive.ObjectIDFromHex(id)
@@ -113,7 +126,7 @@ func (r MovieRepository) Update(id string, movie Movie) error {
 
 	filter := bson.D{{Key: "_id", Value: idParam}}
 
-	_, err = coll.ReplaceOne(context.Background(), filter, movie)
+	_, err = coll.ReplaceOne(ctx, filter, movie)
 
 	if err != nil {
 		return errors.Wrap(err, "failed to update movie")
@@ -123,6 +136,9 @@ func (r MovieRepository) Update(id string, movie Movie) error {
 }
 
 func (r MovieRepository) Delete(id string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	coll := r.dbclient.DB().Database("sample_mflix").Collection("movies")
 
 	idParam, err := primitive.ObjectIDFromHex(id)
@@ -133,7 +149,7 @@ func (r MovieRepository) Delete(id string) error {
 
 	filter := bson.D{{Key: "_id", Value: idParam}}
 
-	_, err = coll.DeleteOne(context.Background(), filter)
+	_, err = coll.DeleteOne(ctx, filter)
 
 	if err != nil {
 		return errors.Wrap(err, "failed to delete movie")

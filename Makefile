@@ -8,6 +8,10 @@ build:
 run:
 	@go run cmd/api/main.go
 
+test:
+	@echo "Testing..."
+	@go test ./... -v
+	
 temple-generate:
 	@echo "Generating temple..."
 	@templ generate
