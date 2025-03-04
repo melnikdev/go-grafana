@@ -18,7 +18,7 @@ var testRepo *repository.MovieRepository
 
 func setupTestDB(t *testing.T) {
 	if testDB == nil {
-		testDB = database.New(&config.MongoDB{Uri: "mongodb://localhost:27017"})
+		testDB = database.New(&config.MongoDB{Uri: "mongodb://root:example@localhost:27017"})
 	}
 
 	clearCollection(t)
