@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"strings"
 	"sync"
 
@@ -42,4 +43,11 @@ func MustLoad() *Config {
 	})
 
 	return configInstance
+}
+
+func (s *Server) Validate() error {
+	if s.Port == 0 {
+		return errors.New("invalid port: port cannot be 0")
+	}
+	return nil
 }

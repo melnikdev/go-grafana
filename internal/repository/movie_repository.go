@@ -50,7 +50,7 @@ func (r MovieRepository) GetTopMovies(limit int64) ([]Movie, error) {
 
 	coll := r.dbclient.DB().Database("sample_mflix").Collection("movies")
 
-	filter := bson.D{{Key: "imdb.rating", Value: bson.D{{"$ne", nil}}}, {Key: "poster", Value: bson.D{{"$ne", nil}}}}
+	filter := bson.D{{Key: "imdb.rating", Value: bson.D{{Key: "$ne", Value: nil}}}, {Key: "poster", Value: bson.D{{Key: "$ne", Value: nil}}}}
 	options := options.Find().SetSort(bson.D{{Key: "imdb.rating", Value: -1}}).SetLimit(limit)
 
 	cursor, err := coll.Find(ctx, filter, options)

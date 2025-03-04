@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -21,6 +22,10 @@ type Server struct {
 }
 
 func NewServer(db database.IdbService, config *config.Server) *http.Server {
+	if err := config.Validate(); err != nil {
+		log.Fatalf("invalid configuration: %v", err)
+	}
+
 	NewServer := &Server{
 		port: config.Port,
 
