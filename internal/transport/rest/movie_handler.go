@@ -27,10 +27,10 @@ func (h MovieHandler) GetMovie(c echo.Context) error {
 }
 
 func (h MovieHandler) CreateMovie(c echo.Context) error {
-	req := request.CreateMovieRequest{}
-	c.Bind(&req)
+	r := request.CreateMovieRequest{}
+	c.Bind(&r)
 
-	id, err := h.service.Create(req)
+	id, err := h.service.Create(r)
 
 	if err != nil {
 		return c.String(500, err.Error())
@@ -41,8 +41,8 @@ func (h MovieHandler) CreateMovie(c echo.Context) error {
 func (h MovieHandler) UpdateMovie(c echo.Context) error {
 	id := c.Param("id")
 
-	req := request.UpdateMovieRequest{}
-	err := h.service.Update(id, req)
+	r := request.UpdateMovieRequest{}
+	err := h.service.Update(id, r)
 
 	if err != nil {
 		return c.String(500, err.Error())

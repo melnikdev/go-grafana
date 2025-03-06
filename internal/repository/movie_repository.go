@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/melnikdev/go-grafana/internal/database"
+	"github.com/melnikdev/go-grafana/internal/model"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -12,25 +13,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type Movie struct {
-	ID     primitive.ObjectID `bson:"_id,omitempty"`
-	Title  string             `bson:"title,omitempty"`
-	Plot   string             `bson:"plot,omitempty"`
-	Poster string             `bson:"poster,omitempty"`
-	Imdb   Imdb               `bson:"imdb,omitempty"`
-}
-
-type Imdb struct {
-	Rating string `bson:"rating,omitempty"`
-	Votes  string `bson:"votes,omitempty"`
-	Id     int32  `bson:"id,omitempty"`
-}
-
 type IMovieRepository interface {
-	GetTopMovies(limit int64) ([]Movie, error)
-	FindById(id string) (Movie, error)
-	Create(movie Movie) (string, error)
-	Update(id string, movie Movie) error
+	GetTopMovies(limit int64) ([]model.Movie, error)
+	FindById(id string) (model.Movie, error)
+	Create(movie model.Movie) (string, error)
+	Update(id string, movie model.Movie) error
 	Delete(id string) error
 }
 
@@ -44,7 +31,7 @@ func NewMovieRepository(db database.IdbService) *MovieRepository {
 	}
 }
 
-func (r MovieRepository) GetTopMovies(limit int64) ([]Movie, error) {
+func (r MovieRepository) GetTopMovies(limit int64) ([]model.Movie, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -59,7 +46,7 @@ func (r MovieRepository) GetTopMovies(limit int64) ([]Movie, error) {
 		return nil, errors.Wrap(err, "error getting top 5 movies")
 	}
 
-	var movies []Movie
+	var movies []model.Movie
 	err = cursor.All(context.Background(), &movies)
 
 	if err != nil {
@@ -70,7 +57,7 @@ func (r MovieRepository) GetTopMovies(limit int64) ([]Movie, error) {
 
 }
 
-func (r MovieRepository) FindById(id string) (Movie, error) {
+func (r MovieRepository) FindById(id string) (model.Movie, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -79,25 +66,25 @@ func (r MovieRepository) FindById(id string) (Movie, error) {
 	idParam, err := primitive.ObjectIDFromHex(id)
 
 	if err != nil {
-		return Movie{}, errors.Wrap(err, "not valid id")
+		return model.Movie{}, errors.Wrap(err, "not valid id")
 	}
 
 	filter := bson.D{{Key: "_id", Value: idParam}}
 
-	var result Movie
+	var result model.Movie
 	err = coll.FindOne(ctx, filter).Decode(&result)
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return Movie{}, errors.Wrap(err, "not movie found")
+			return model.Movie{}, errors.Wrap(err, "not movie found")
 		}
-		return Movie{}, errors.Wrap(err, "error finding movie")
+		return model.Movie{}, errors.Wrap(err, "error finding movie")
 	}
 
 	return result, nil
 }
 
-func (r MovieRepository) Create(movie Movie) (string, error) {
+func (r MovieRepository) Create(movie model.Movie) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -112,7 +99,7 @@ func (r MovieRepository) Create(movie Movie) (string, error) {
 	return result.InsertedID.(primitive.ObjectID).Hex(), nil
 }
 
-func (r MovieRepository) Update(id string, movie Movie) error {
+func (r MovieRepository) Update(id string, movie model.Movie) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 

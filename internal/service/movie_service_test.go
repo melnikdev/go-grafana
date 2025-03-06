@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/melnikdev/go-grafana/internal/repository"
+	"github.com/melnikdev/go-grafana/internal/model"
 	"github.com/melnikdev/go-grafana/internal/request"
 	"github.com/melnikdev/go-grafana/internal/service"
 	"github.com/stretchr/testify/assert"
@@ -20,19 +20,19 @@ type MockMovieRepository struct {
 }
 
 // Имитация метода FindById
-func (m *MockMovieRepository) FindById(id string) (repository.Movie, error) {
+func (m *MockMovieRepository) FindById(id string) (model.Movie, error) {
 	args := m.Called(id)
-	return args.Get(0).(repository.Movie), args.Error(1)
+	return args.Get(0).(model.Movie), args.Error(1)
 }
 
 // Имитация метода Create
-func (m *MockMovieRepository) Create(movie repository.Movie) (string, error) {
+func (m *MockMovieRepository) Create(movie model.Movie) (string, error) {
 	args := m.Called(movie)
 	return args.String(0), args.Error(1)
 }
 
 // Имитация метода Update
-func (m *MockMovieRepository) Update(id string, movie repository.Movie) error {
+func (m *MockMovieRepository) Update(id string, movie model.Movie) error {
 	args := m.Called(id, movie)
 	return args.Error(0)
 }
@@ -44,9 +44,9 @@ func (m *MockMovieRepository) Delete(id string) error {
 }
 
 // Имитация метода GetTopMovies
-func (m *MockMovieRepository) GetTopMovies(limit int64) ([]repository.Movie, error) {
+func (m *MockMovieRepository) GetTopMovies(limit int64) ([]model.Movie, error) {
 	args := m.Called(limit)
-	return args.Get(0).([]repository.Movie), args.Error(1)
+	return args.Get(0).([]model.Movie), args.Error(1)
 }
 
 func setupTest() (*service.MovieService, *MockMovieRepository) {
@@ -58,7 +58,7 @@ func setupTest() (*service.MovieService, *MockMovieRepository) {
 func TestCreateMovie(t *testing.T) {
 	svc, mockRepo := setupTest()
 	objectID, err := primitive.ObjectIDFromHex("123")
-	movie := repository.Movie{ID: objectID, Title: "Test Movie"}
+	movie := model.Movie{ID: objectID, Title: "Test Movie"}
 
 	strId := movie.ID.Hex()
 	mockRepo.On("Create", mock.Anything).Return(strId, nil)
@@ -70,7 +70,7 @@ func TestCreateMovie(t *testing.T) {
 
 func TestFindById(t *testing.T) {
 	svc, mockRepo := setupTest()
-	movie := repository.Movie{Title: "Test Movie"}
+	movie := model.Movie{Title: "Test Movie"}
 	mockRepo.On("FindById", "123").Return(movie, nil)
 
 	fetchedMovie, err := svc.FindById("123")
@@ -80,8 +80,8 @@ func TestFindById(t *testing.T) {
 
 func TestGetTopMovies(t *testing.T) {
 	svc, mockRepo := setupTest()
-	movie := repository.Movie{Title: "Test Movie"}
-	mockRepo.On("GetTopMovies", int64(1)).Return([]repository.Movie{movie}, nil)
+	movie := model.Movie{Title: "Test Movie"}
+	mockRepo.On("GetTopMovies", int64(1)).Return([]model.Movie{movie}, nil)
 
 	topMovies, err := svc.GetTopMovies(1)
 	assert.NoError(t, err)

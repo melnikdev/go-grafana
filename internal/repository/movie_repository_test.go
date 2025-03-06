@@ -8,6 +8,7 @@ import (
 
 	"github.com/melnikdev/go-grafana/internal/config"
 	"github.com/melnikdev/go-grafana/internal/database"
+	"github.com/melnikdev/go-grafana/internal/model"
 	"github.com/melnikdev/go-grafana/internal/repository"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
@@ -44,12 +45,12 @@ func clearCollection(t *testing.T) {
 func TestCreateMovie(t *testing.T) {
 	setupTestDB(t)
 
-	movie := repository.Movie{
+	movie := model.Movie{
 		ID:     primitive.NewObjectID(),
 		Title:  "Test Movie",
 		Plot:   "This is a test movie",
 		Poster: "test_poster.jpg",
-		Imdb:   repository.Imdb{Rating: "8.5", Votes: "1000", Id: 123456},
+		Imdb:   model.Imdb{Rating: "8.5", Votes: "1000", Id: 123456},
 	}
 
 	id, err := testRepo.Create(movie)
@@ -60,12 +61,12 @@ func TestCreateMovie(t *testing.T) {
 func TestFindByIdMovie(t *testing.T) {
 	setupTestDB(t)
 
-	movie := repository.Movie{
+	movie := model.Movie{
 		ID:     primitive.NewObjectID(),
 		Title:  "Find Me",
 		Plot:   "This is a test movie",
 		Poster: "test_poster.jpg",
-		Imdb:   repository.Imdb{Rating: "7.0", Votes: "500", Id: 654321},
+		Imdb:   model.Imdb{Rating: "7.0", Votes: "500", Id: 654321},
 	}
 
 	id, _ := testRepo.Create(movie)
@@ -78,19 +79,19 @@ func TestFindByIdMovie(t *testing.T) {
 func TestGetTopMovies(t *testing.T) {
 	setupTestDB(t)
 
-	movie1 := repository.Movie{
+	movie1 := model.Movie{
 		ID:     primitive.NewObjectID(),
 		Title:  "Top Movie 1",
 		Plot:   "Movie 1",
 		Poster: "poster1.jpg",
-		Imdb:   repository.Imdb{Rating: "9.0", Votes: "10000", Id: 1},
+		Imdb:   model.Imdb{Rating: "9.0", Votes: "10000", Id: 1},
 	}
-	movie2 := repository.Movie{
+	movie2 := model.Movie{
 		ID:     primitive.NewObjectID(),
 		Title:  "Top Movie 2",
 		Plot:   "Movie 2",
 		Poster: "poster2.jpg",
-		Imdb:   repository.Imdb{Rating: "8.5", Votes: "8000", Id: 2},
+		Imdb:   model.Imdb{Rating: "8.5", Votes: "8000", Id: 2},
 	}
 
 	testRepo.Create(movie1)
@@ -105,12 +106,12 @@ func TestGetTopMovies(t *testing.T) {
 func TestUpdateMovie(t *testing.T) {
 	setupTestDB(t)
 
-	movie := repository.Movie{
+	movie := model.Movie{
 		ID:     primitive.NewObjectID(),
 		Title:  "Original Title",
 		Plot:   "This is a test movie",
 		Poster: "test_poster.jpg",
-		Imdb:   repository.Imdb{Rating: "8.0", Votes: "2000", Id: 789123},
+		Imdb:   model.Imdb{Rating: "8.0", Votes: "2000", Id: 789123},
 	}
 
 	id, _ := testRepo.Create(movie)
@@ -128,12 +129,12 @@ func TestUpdateMovie(t *testing.T) {
 func TestDeleteMovie(t *testing.T) {
 	setupTestDB(t)
 
-	movie := repository.Movie{
+	movie := model.Movie{
 		ID:     primitive.NewObjectID(),
 		Title:  "Delete Me",
 		Plot:   "This movie will be deleted",
 		Poster: "delete_poster.jpg",
-		Imdb:   repository.Imdb{Rating: "5.0", Votes: "500", Id: 999999},
+		Imdb:   model.Imdb{Rating: "5.0", Votes: "500", Id: 999999},
 	}
 
 	id, _ := testRepo.Create(movie)

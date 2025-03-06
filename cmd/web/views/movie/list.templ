@@ -1,10 +1,10 @@
 package movie
 
 import (
-  "github.com/melnikdev/go-grafana/internal/repository"
+  "github.com/melnikdev/go-grafana/internal/model"
 )
 
-templ List(items []repository.Movie) {
+templ List(items []model.Movie) {
   <h1 class="text-3xl font-bold mb-4">Top Movies</h1>
   <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
    for _, item := range items {
@@ -19,7 +19,7 @@ templ List(items []repository.Movie) {
    </div>
 }
 
-templ getImage(item repository.Movie) {
+templ getImage(item model.Movie) {
 	if item.Poster != "" {
 		  <img class="rounded-lg group-hover:brightness-50 transition duration-300" src={ item.Poster}  alt={ item.Title } />
 	}else{
