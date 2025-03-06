@@ -17,3 +17,8 @@ Run the application
 ```bash
 make run
 ```
+
+Run the test
+```bash
+make test
+```
