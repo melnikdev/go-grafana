@@ -50,8 +50,6 @@ func (s AuthService) Register(r request.RegisterUserRequest) (string, error) {
 }
 
 func (s AuthService) Login(r request.LoginUserRequest) (string, error) {
-	var jwtKey = []byte("go_test_secret_key")
-
 	err := s.Validate.Struct(r)
 
 	if err != nil {
@@ -70,15 +68,28 @@ func (s AuthService) Login(r request.LoginUserRequest) (string, error) {
 		return "", err
 	}
 
+	tokenString, err := s.generateJwtToken(storedUser)
+
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
+}
+
+func (s AuthService) generateJwtToken(user model.User) (string, error) {
+	var jwtKey = []byte("go_test_secret_key")
+
 	expirationTime := time.Now().Add(24 * time.Hour)
 
 	claims := &jwt.RegisteredClaims{
-		Subject:   storedUser.ID.Hex(),
+		Subject:   user.ID.Hex(),
 		ExpiresAt: jwt.NewNumericDate(expirationTime),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString(jwtKey)
+
 	if err != nil {
 		return "", err
 	}
