@@ -16,5 +16,6 @@ func InitAuthRoutes(e *echo.Echo, db database.IdbService) {
 	h := rest.NewAuthHandler(s)
 
 	e.POST("/register", h.RegisterUser)
+	e.POST("/login", h.Login)
 
 }

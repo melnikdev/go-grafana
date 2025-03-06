@@ -1,7 +1,10 @@
 package service
 
 import (
+	"time"
+
 	"github.com/go-playground/validator/v10"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/melnikdev/go-grafana/internal/model"
 	"github.com/melnikdev/go-grafana/internal/repository"
 	"github.com/melnikdev/go-grafana/internal/request"
@@ -9,7 +12,8 @@ import (
 )
 
 type IAuthService interface {
-	Create(r request.RegisterUserRequest) (string, error)
+	Register(r request.RegisterUserRequest) (string, error)
+	Login(r request.LoginUserRequest) (string, error)
 }
 
 type AuthService struct {
@@ -24,7 +28,7 @@ func NewAuthService(repo repository.IUserRepository, val *validator.Validate) *A
 	}
 }
 
-func (s AuthService) Create(r request.RegisterUserRequest) (string, error) {
+func (s AuthService) Register(r request.RegisterUserRequest) (string, error) {
 	err := s.Validate.Struct(r)
 
 	if err != nil {
@@ -43,4 +47,41 @@ func (s AuthService) Create(r request.RegisterUserRequest) (string, error) {
 	}
 
 	return s.UserRepository.Create(user)
+}
+
+func (s AuthService) Login(r request.LoginUserRequest) (string, error) {
+	var jwtKey = []byte("go_test_secret_key")
+
+	err := s.Validate.Struct(r)
+
+	if err != nil {
+		return "", err
+	}
+
+	storedUser, err := s.UserRepository.FindByEmail(r.Email)
+
+	if err != nil {
+		return "", err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(storedUser.Password), []byte(r.Password))
+
+	if err != nil {
+		return "", err
+	}
+
+	expirationTime := time.Now().Add(24 * time.Hour)
+
+	claims := &jwt.RegisteredClaims{
+		Subject:   storedUser.ID.Hex(),
+		ExpiresAt: jwt.NewNumericDate(expirationTime),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString(jwtKey)
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
 }
