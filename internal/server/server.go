@@ -62,6 +62,7 @@ func (s *Server) initServer() http.Handler {
 	e.Static("/assets", "cmd/web/assets")
 	apiroute.InitPublicRoutes(e, s.db)
 	apiroute.InitMovieRoutes(e, s.db)
+	apiroute.InitAuthRoutes(e, s.db)
 	webroute.InitWebRoutes(e, s.db)
 
 	return e
