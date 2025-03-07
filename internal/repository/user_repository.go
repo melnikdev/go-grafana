@@ -62,3 +62,26 @@ func (r UserRepository) FindByEmail(email string) (model.User, error) {
 
 	return result, nil
 }
+
+func (r UserRepository) Delete(id string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	coll := r.dbclient.DB().Database("movies_test_db").Collection("users")
+
+	objectId, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		return errors.Wrap(err, "invalid user ID")
+	}
+
+	filter := bson.D{{Key: "_id", Value: objectId}}
+
+	result := coll.FindOneAndDelete(ctx, filter)
+
+	if err := result.Err(); err != nil {
+		return errors.Wrap(err, "error deleting user")
+	}
+
+	return nil
+}
