@@ -77,9 +77,13 @@ func (r UserRepository) Delete(id string) error {
 
 	filter := bson.D{{Key: "_id", Value: objectId}}
 
-	result := coll.FindOneAndDelete(ctx, filter)
+	result, err := coll.DeleteOne(ctx, filter)
 
-	if err := result.Err(); err != nil {
+	if result.DeletedCount == 0 {
+		return errors.New("user not found")
+	}
+
+	if err != nil {
 		return errors.Wrap(err, "error deleting user")
 	}
 
