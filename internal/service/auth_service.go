@@ -77,7 +77,7 @@ func (s AuthService) Login(r request.LoginUserRequest) (string, error) {
 	return tokenString, nil
 }
 
-func (s AuthService) generateJwtToken(user model.User) (string, error) {
+func (s AuthService) generateJwtToken(user *model.User) (string, error) {
 	var jwtKey = []byte("go_test_secret_key")
 
 	expirationTime := time.Now().Add(24 * time.Hour)

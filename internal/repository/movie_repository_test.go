@@ -119,7 +119,7 @@ func TestUpdateMovie(t *testing.T) {
 	updatedMovie := movie
 	updatedMovie.Title = "Updated Title"
 
-	err := testRepo.Update(id, updatedMovie)
+	err := testRepo.Update(id, &updatedMovie)
 	assert.NoError(t, err)
 
 	fetchedMovie, _ := testRepo.FindById(id)

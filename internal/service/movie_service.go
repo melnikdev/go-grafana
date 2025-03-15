@@ -8,7 +8,7 @@ import (
 )
 
 type IMovieService interface {
-	FindById(id string) (model.Movie, error)
+	FindById(id string) (*model.Movie, error)
 	Create(r request.CreateMovieRequest) (string, error)
 	Update(id string, r request.UpdateMovieRequest) error
 	Delete(id string) error
@@ -27,7 +27,7 @@ func NewMovieService(repo repository.IMovieRepository, val *validator.Validate) 
 	}
 }
 
-func (s MovieService) FindById(id string) (model.Movie, error) {
+func (s MovieService) FindById(id string) (*model.Movie, error) {
 	return s.MovieRepository.FindById(id)
 }
 
@@ -56,7 +56,7 @@ func (s MovieService) Update(id string, r request.UpdateMovieRequest) error {
 		Title: r.Title,
 	}
 
-	return s.MovieRepository.Update(id, m)
+	return s.MovieRepository.Update(id, &m)
 }
 
 func (s MovieService) Delete(id string) error {

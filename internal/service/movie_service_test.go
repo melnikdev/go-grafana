@@ -12,17 +12,14 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// MockMovieRepository - мок-реализация интерфейса IMovieRepository для тестирования
-// Использует библиотеку testify/mock для имитации методов репозитория
-
 type MockMovieRepository struct {
 	mock.Mock
 }
 
 // Имитация метода FindById
-func (m *MockMovieRepository) FindById(id string) (model.Movie, error) {
+func (m *MockMovieRepository) FindById(id string) (*model.Movie, error) {
 	args := m.Called(id)
-	return args.Get(0).(model.Movie), args.Error(1)
+	return args.Get(0).(*model.Movie), args.Error(1)
 }
 
 // Имитация метода Create
@@ -32,7 +29,7 @@ func (m *MockMovieRepository) Create(movie model.Movie) (string, error) {
 }
 
 // Имитация метода Update
-func (m *MockMovieRepository) Update(id string, movie model.Movie) error {
+func (m *MockMovieRepository) Update(id string, movie *model.Movie) error {
 	args := m.Called(id, movie)
 	return args.Error(0)
 }
@@ -71,7 +68,7 @@ func TestCreateMovie(t *testing.T) {
 func TestFindById(t *testing.T) {
 	svc, mockRepo := setupTest()
 	movie := model.Movie{Title: "Test Movie"}
-	mockRepo.On("FindById", "123").Return(movie, nil)
+	mockRepo.On("FindById", "123").Return(&movie, nil)
 
 	fetchedMovie, err := svc.FindById("123")
 	assert.NoError(t, err)

@@ -14,7 +14,8 @@ import (
 
 type IUserRepository interface {
 	Create(user model.User) (string, error)
-	FindByEmail(email string) (model.User, error)
+	FindByEmail(email string) (*model.User, error)
+	Delete(id string) error
 }
 
 type UserRepository struct {
@@ -42,7 +43,7 @@ func (r UserRepository) Create(user model.User) (string, error) {
 	return result.InsertedID.(primitive.ObjectID).Hex(), nil
 }
 
-func (r UserRepository) FindByEmail(email string) (model.User, error) {
+func (r UserRepository) FindByEmail(email string) (*model.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -55,12 +56,12 @@ func (r UserRepository) FindByEmail(email string) (model.User, error) {
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return model.User{}, errors.Wrap(err, "not user found")
+			return nil, errors.Wrap(err, "not user found")
 		}
-		return model.User{}, errors.Wrap(err, "error user movie")
+		return nil, errors.Wrap(err, "error user movie")
 	}
 
-	return result, nil
+	return &result, nil
 }
 
 func (r UserRepository) Delete(id string) error {

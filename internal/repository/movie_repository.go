@@ -15,9 +15,9 @@ import (
 
 type IMovieRepository interface {
 	GetTopMovies(limit int64) ([]model.Movie, error)
-	FindById(id string) (model.Movie, error)
+	FindById(id string) (*model.Movie, error)
 	Create(movie model.Movie) (string, error)
-	Update(id string, movie model.Movie) error
+	Update(id string, movie *model.Movie) error
 	Delete(id string) error
 }
 
@@ -57,7 +57,7 @@ func (r MovieRepository) GetTopMovies(limit int64) ([]model.Movie, error) {
 
 }
 
-func (r MovieRepository) FindById(id string) (model.Movie, error) {
+func (r MovieRepository) FindById(id string) (*model.Movie, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -66,7 +66,7 @@ func (r MovieRepository) FindById(id string) (model.Movie, error) {
 	idParam, err := primitive.ObjectIDFromHex(id)
 
 	if err != nil {
-		return model.Movie{}, errors.Wrap(err, "not valid id")
+		return nil, errors.Wrap(err, "not valid id")
 	}
 
 	filter := bson.D{{Key: "_id", Value: idParam}}
@@ -76,12 +76,12 @@ func (r MovieRepository) FindById(id string) (model.Movie, error) {
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return model.Movie{}, errors.Wrap(err, "not movie found")
+			return nil, errors.Wrap(err, "not movie found")
 		}
-		return model.Movie{}, errors.Wrap(err, "error finding movie")
+		return nil, errors.Wrap(err, "error finding movie")
 	}
 
-	return result, nil
+	return &result, nil
 }
 
 func (r MovieRepository) Create(movie model.Movie) (string, error) {
@@ -99,7 +99,7 @@ func (r MovieRepository) Create(movie model.Movie) (string, error) {
 	return result.InsertedID.(primitive.ObjectID).Hex(), nil
 }
 
-func (r MovieRepository) Update(id string, movie model.Movie) error {
+func (r MovieRepository) Update(id string, movie *model.Movie) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
